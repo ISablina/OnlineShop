@@ -18,7 +18,7 @@ components:
           description: Имя пользователя, оставившего отзыв
           type: string
         created_at:
-            description: Дата и время сохранения игрушки в каталоге
+            description: Дата и время публикации отзыва
             type: string
             example: 20 августа 2019г.
         text:
