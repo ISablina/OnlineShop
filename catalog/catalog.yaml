@@ -1,4 +1,23 @@
+openapi: 3.0.0
+info:
+  title: "Тестовое задание: Магазин обуви"
+  version: "1.0.0"
+  contact:
+    name: Саблина Ирина
+    email: sablina@surf.dev
+
+servers:
+  - url: https://someaddress.com
+    description: TODO заглушка, требуется поправить в будущем на реальный адрес. 
+
 components:
+  securitySchemes:
+    AuthApiKey:
+      description: Ключ авторизованного пользователя
+      type: apiKey
+      in: header
+      name: Authorization
+
   schemas:
     item:
       type: object
@@ -6,6 +25,8 @@ components:
         - item_id
         - name
         - price
+        - item_category
+        - sizes
       properties:
         item_id:
           description: Артикул товара
@@ -39,14 +60,14 @@ components:
           minItems: 1
           maxItems: 5
           items: 
-            $ref: "models.yaml#/components/schemas/category"
+            $ref: "#/components/schemas/category"
         images:
           description: Изображения товара
           type: array
           minItems: 1
           maxItems: 10
           items: 
-            $ref: "models.yaml#/components/schemas/item_image"
+            $ref: "#/components/schemas/item_image"
           nullable: true
         video:
           description: Видео товара
@@ -54,7 +75,7 @@ components:
           minItems: 1
           maxItems: 2
           items: 
-            $ref: "models.yaml#/components/schemas/item_video"
+            $ref: "#/components/schemas/item_video"
           nullable: true
         rating:
           description: Рейтинг товара
@@ -63,11 +84,6 @@ components:
         colour:
           description: Цвет товара
           type: string
-          enum:
-            - черный
-            - белый
-            - серый
-          example: черный
         item_brand:
           description: Бренд товара
           type: string
@@ -83,13 +99,13 @@ components:
           type: array
           nullable: false
           items: 
-            $ref: "models.yaml#/components/schemas/sizes"
+            $ref: "#/components/schemas/sizes"
         reviews:
           description: Отзывы о товаре
           type: array
           nullable: true
-          items: 
-            $ref: "models.yaml#/components/schemas/reviews"
+          items:
+            $ref: "#/components/schemas/review"
 
     sizes:
       type: object
@@ -114,9 +130,6 @@ components:
       properties:
         link:
           description: Ссылка на изображение товара
-          type: string
-        preview_image:
-          description: Ссылка на превью изображения
           type: string
     
     item_video:
@@ -151,6 +164,7 @@ components:
         - review_id
         - review_rate
         - created_at
+        - user
       properties:
         review_id:
           description: Идентификатор отзыва
@@ -173,12 +187,6 @@ components:
           description: Ссылка на изображение в отзыве
           type: string
 
-    reviews:
-      description: Список отзывов на товар
-      type: array
-      items:
-        $ref: "models.yaml#/components/schemas/review"
-
     Error:
         type: object
         required:
@@ -193,3 +201,39 @@ components:
             description: Описание ошибки
             type: string
             example: Не найдено
+
+
+security:
+  - AuthApiKey: []
+
+paths:
+   /item/{item_id}:
+    get:
+      summary: Метод получения детальной карточки товара
+      tags:
+        - catalog
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            type: string
+          example: М4574033
+      responses:
+        '200':
+          description: Получена карточка товара
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/item"
+        'default':
+            description: Все нестандартные ответы
+            content:
+              application/json;charset=UTF-8:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Error"
