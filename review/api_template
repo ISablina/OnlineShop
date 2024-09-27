@@ -1,0 +1,82 @@
+openapi: 3.0.0
+info:
+  title: "Тестовое задание: Магазин обуви"
+  version: "1.0.0"
+  contact:
+    name: Саблина Ирина
+    email: sablina@surf.dev
+
+servers:
+  - url: https://someaddress.com
+    description: TODO заглушка, требуется поправить в будущем на реальный адрес. 
+
+components:
+  securitySchemes:
+    AuthApiKey:
+      description: Ключ авторизованного пользователя
+      type: apiKey
+      in: header
+      name: Authorization  
+
+
+security:
+  - AuthApiKey: []
+
+paths:
+
+  /review/{item_id}:
+    get:
+      summary: Метод получения списка отзывов о товаре
+      tags:
+        - review
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          description: Артикул товара
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Получен список отзывов на товар
+          content:
+            application/json:
+              schema:
+                $ref: "models.yaml#/components/schemas/reviews"
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "models.yaml#/components/schemas/Error"
+
+    post:
+      summary: Публикация нового отзыва
+      tags:
+        - review
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          description: Артикул товара
+          schema:
+            type: string
+      requestBody:
+       required: true
+       content:
+         application/json:
+          schema:
+           $ref: "models.yaml#/components/schemas/review"
+      responses:
+        '200':
+          description: Отзыв отправлен на модерацию
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "models.yaml#/components/schemas/Error"
