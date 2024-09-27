@@ -1,0 +1,173 @@
+openapi: 3.0.0
+info:
+  title: "Тестовое задание: Магазин обуви"
+  version: "1.0.0"
+  contact:
+    name: Саблина Ирина
+    email: sablina@surf.dev
+
+servers:
+  - url: https://someaddress.com
+    description: TODO заглушка, требуется поправить в будущем на реальный адрес. 
+
+components:
+  
+  schemas:
+    review:
+      description: Отзыв в списке всех отзывов на товар
+      type: object
+      required:
+        - review_id
+        - review_rate
+        - created_at
+        - item
+        - user
+      properties:
+        review_id:
+          description: Идентификатор отзыва
+          type: string
+        review_rate:
+          description: Оценка товара
+          type: integer
+        user:
+          description: Имя пользователя, оставившего отзыв
+          type: string
+        created_at:
+            description: Дата сохранения отзыва на товар
+            type: string
+            example: 20 августа 2019г
+        text:
+          description: Текст отзыва
+          type: string
+          maxLength: 100
+        pictures:
+          description: Изображения в отзыве
+          type: array
+          maxItems: 5
+          items:
+            $ref: "#/components/schemas/picture"
+        item:
+          $ref: "#/components/schemas/item"
+          # description: Товар, к которому оставлен отзыв
+        
+    reviews:
+      description: Список отзывов на товар
+      type: array
+      items:
+        $ref: "#/components/schemas/review"
+    
+    picture:
+      description: Ссылка на фотографию товара от пользователя
+      type: string
+      
+    item:
+      description: Усеченная модель товара для отображения фото товара в отзыве
+      type: object
+      required:
+        - item_id
+      properties:
+        item_id:
+          description: Артикул товара
+          type: string
+        pictures:
+          description: Ссылка на фото товара
+          type: string
+
+    Error:
+        type: object
+        required:
+          - title
+          - message
+        properties:
+          title:
+            description: Код ошибки
+            type: integer
+            example: 404
+          message:
+            description: Описание ошибки
+            type: string
+            example: Не найдено
+  
+  securitySchemes:
+    AuthApiKey:
+      description: Ключ авторизованного пользователя
+      type: apiKey
+      in: header
+      name: Authorization  
+
+
+security:
+  - AuthApiKey: []
+
+paths:
+
+  /review/{item_id}:
+    get:
+      summary: Метод получения списка отзывов о товаре
+      tags:
+        - review
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          description: Артикул товара
+          schema:
+            type: string
+        - name: offset
+          in: query
+          required: true
+          description: Количество товаров, которые нужно пропустить для загрузки следующего блока с отзывами
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: true
+          description: Количество товаров, которые нужно вернуть для отображения на странице
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Получен список отзывов на товар
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/reviews"
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+
+    post:
+      summary: Публикация нового отзыва
+      tags:
+        - review
+      parameters:
+        - name: item_id
+          in: path
+          required: true
+          description: Артикул товара
+          schema:
+            type: string
+      requestBody:
+       required: true
+       content:
+         application/json:
+          schema:
+           $ref: "#/components/schemas/review"
+      responses:
+        '200':
+          description: Отзыв опубликован
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+      
+
