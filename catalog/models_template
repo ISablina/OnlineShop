@@ -1,0 +1,195 @@
+components:
+  schemas:
+    item:
+      type: object
+      required:
+        - item_id
+        - name
+        - price
+      properties:
+        item_id:
+          description: Артикул товара
+          type: string
+          example: М4574033
+        name:
+          description: Название товара
+          type: string
+          example: Туфли "Красотка"
+        info:
+          description: Информация о товаре
+          type: string
+        description:
+          description: Описание товара
+          type: string
+        has_free_repair:
+          description: Доступен бесплатный ремонт?
+          type: boolean
+        has_free_delivery:
+          description: Доступен бесплатный ремонт?
+          type: boolean
+        certificate:
+          description: Ссылка на сертификат качества
+          type: string
+        is_new:
+          description: Флаг "Новые" 
+          type: boolean
+        item_category:
+          description: Категории товара
+          type: array
+          minItems: 1
+          maxItems: 5
+          items: 
+            $ref: "models.yaml#/components/schemas/category"
+        images:
+          description: Изображения товара
+          type: array
+          minItems: 1
+          maxItems: 10
+          items: 
+            $ref: "models.yaml#/components/schemas/item_image"
+          nullable: true
+        video:
+          description: Видео товара
+          type: array
+          minItems: 1
+          maxItems: 2
+          items: 
+            $ref: "models.yaml#/components/schemas/item_video"
+          nullable: true
+        rating:
+          description: Рейтинг товара
+          type: number
+          example: 3.32
+        colour:
+          description: Цвет товара
+          type: string
+          enum:
+            - черный
+            - белый
+            - серый
+          example: черный
+        item_brand:
+          description: Бренд товара
+          type: string
+        price:
+          description: Текущая цена
+          type: integer
+        old_price:
+          description: Цена без скидки
+          type: integer
+          nullable: true
+        sizes:
+          description: Размеры товара
+          type: array
+          nullable: false
+          items: 
+            $ref: "models.yaml#/components/schemas/sizes"
+        reviews:
+          description: Отзывы о товаре
+          type: array
+          nullable: true
+          items: 
+            $ref: "models.yaml#/components/schemas/reviews"
+
+    sizes:
+      type: object
+      required:
+        - russian_size
+        - is_available
+      properties:
+        russian_size:
+          description: Российский размер
+          type: number
+          example: 34.5
+        eu_size:
+          description: Европейский размер
+          type: number
+          example: 34.5
+        is_available:
+          description: Наличие
+          type: boolean
+
+    item_image:
+      type: object
+      properties:
+        link:
+          description: Ссылка на изображение товара
+          type: string
+        preview_image:
+          description: Ссылка на превью изображения
+          type: string
+    
+    item_video:
+      type: object
+      properties:
+        link:
+          description: Ссылка на видео товара
+          type: string
+        video_preview:
+            description: Ссылка на превью для видео
+            type: string
+    
+    category:
+        type: object
+        required:
+          - category_id
+          - category_name
+        properties:
+          category_id:
+            description: Идиентификатор категории
+            type: string
+            example: М4574033
+          category_name:
+            description: Название категории
+            type: string
+            example: Женские туфли
+          
+    review:
+      description: Отзыв в списке всех отзывов на товар
+      type: object
+      required:
+        - review_id
+        - review_rate
+        - created_at
+      properties:
+        review_id:
+          description: Идентификатор отзыва
+          type: string
+        review_rate:
+          description: Оценка товара
+          type: integer
+        user:
+          description: Имя пользователя, оставившего отзыв
+          type: string
+        created_at:
+            description: Дата и время сохранения игрушки в каталоге
+            type: string
+            example: 20 августа 2019г.
+        text:
+          description: Текст отзыва
+          type: string
+          maxLength: 100
+        picture:
+          description: Ссылка на изображение в отзыве
+          type: string
+
+    reviews:
+      description: Список отзывов на товар
+      type: array
+      items:
+        $ref: "models.yaml#/components/schemas/review"
+
+    Error:
+        type: object
+        required:
+          - title
+          - message
+        properties:
+          title:
+            description: Код ошибки
+            type: integer
+            example: 404
+          message:
+            description: Описание ошибки
+            type: string
+            example: Не найдено
