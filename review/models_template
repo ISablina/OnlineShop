@@ -7,6 +7,7 @@ components:
         - review_id
         - review_rate
         - created_at
+        - item
       properties:
         review_id:
           description: Идентификатор отзыва
@@ -18,9 +19,10 @@ components:
           description: Имя пользователя, оставившего отзыв
           type: string
         created_at:
-            description: Дата и время публикации отзыва
+            description: Дата публикации отзыва
             type: string
-            example: 20 августа 2019г.
+            format: date
+            example: 20 августа 2019г
         text:
           description: Текст отзыва
           type: string
@@ -31,6 +33,11 @@ components:
           maxItems: 5
           items:
             $ref: "models.yaml#/components/schemas/picture"
+        item:
+          description: Товар, к которому оставлен отзыв
+          type: object
+          items:
+            $ref: "models.yaml#/components/schemas/item"
         
     reviews:
       description: Список отзывов на товар
@@ -40,7 +47,21 @@ components:
     
     picture:
       description: Ссылка на изображение товара
-      type: string   
+      type: string
+
+    item:
+      description: Усеченная модель товара для отображения фото товара в отзыве
+      type: object
+      required:
+        - item_id
+      properties:
+        item_id
+          description: Артикул товара
+          type: string
+        pictures
+          description: Ссылка на фото товара
+          type: string
+          
 
     Error:
         type: object
