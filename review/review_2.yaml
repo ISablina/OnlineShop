@@ -49,12 +49,26 @@ components:
         item:
           $ref: "#/components/schemas/item"
           # description: Товар, к которому оставлен отзыв
-        
-    reviews:
-      description: Список отзывов на товар
-      type: array
-      items:
-        $ref: "#/components/schemas/review"
+          
+    new_review:
+      description: Новый отзыв от пользователя
+      type: object
+      required:
+        - review_rate
+      properties:
+        review_rate:
+          description: Оценка товара
+          type: integer
+        text:
+          description: Текст отзыва
+          type: string
+          maxLength: 100
+        pictures:
+          description: Изображения в отзыве
+          type: array
+          maxItems: 5
+          items:
+            $ref: "#/components/schemas/picture"
     
     picture:
       description: Ссылка на фотографию товара от пользователя
@@ -131,7 +145,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/reviews"
+                type: array
+                items:
+                  $ref: "#/components/schemas/review"
         'default':
           description: Все нестандартные ответы
           content:
@@ -140,24 +156,18 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Error"
-
+  /new_review:
     post:
       summary: Публикация нового отзыва
       tags:
         - review
-      parameters:
-        - name: item_id
-          in: path
-          required: true
-          description: Артикул товара
-          schema:
-            type: string
       requestBody:
-       required: true
        content:
-         application/json:
-          schema:
-           $ref: "#/components/schemas/review"
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/new_review"
       responses:
         '200':
           description: Отзыв опубликован
@@ -169,5 +179,42 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Error"
+  
+  /pictures_download:
+    post:
+      summary: Загрузка фото от пользователя
+      tags:
+        - review
+      requestBody:
+        content:
+            # a binary file of type png, jpeg, heic
+          'image/jpeg':
+            schema:
+              type: string
+              format: binary
+          'image/png':
+            schema:
+              type: string
+              format: binary
+          'image/HEIC':
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Фото загружены
+          content: 
+            text/plain:
+              schema:
+                type: 'string'
+        'default':
+          description: Все нестандартные ответы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+                  
       
 
